@@ -10,7 +10,7 @@ def get_urls(target, api_key):
     # get initial resp
     response = s.get("https://shorteners.grayhatwarfare.com/api/v1/subdomain/{}/files/0/1?access_token={}".format(target, api_key)).json()
     url_count = response["urlsCount"]
-    logging.debug("{} available for {}, {} requests are required, scraping..".format(url_count, target, int(url_count/1000)+1))
+    logging.debug("{} available for {}, {} requests are required, grabbing now".format(url_count, target, int(url_count/1000)+1))
     # scrape all the urls and print to stdout
     for i in range(0, url_count, 1000):
         try:
@@ -21,7 +21,7 @@ def get_urls(target, api_key):
                     print(url["url"])
             elif "error" in batch:
                 if "Results listing is limited to protect resources." in batch["error"]:
-                    logging.debug("Scraping stopped due to API_KEY access cap, to get around this you will need to upgrade your account")
+                    logging.debug("Scraping stopped due to API limitations, to get around this you will need to upgrade your account")
                     break
                 else:
                     logging.debug("Unknown response received from server: {}".format(batch["error"]))
@@ -32,7 +32,7 @@ def get_urls(target, api_key):
 
 def main():
     # Parse Arguments
-    parser = argparse.ArgumentParser(description="Scraped shortned URLs for a given site from the GrayHatWarefare Shorteners API")
+    parser = argparse.ArgumentParser(description="Grabs shortned URLs for a given site from the GrayHatWarfare Shorteners API")
     parser.add_argument('-t','--target', type=str, action="store", dest="target", help="Target domain/subdomains (e.g. example.com)", required=True)
     parser.add_argument('-d','--debug', type=bool, action="store", dest="debug", help="Print debug information", default=False)
     args = parser.parse_args()
@@ -51,7 +51,7 @@ def main():
     if os.getenv("GRAYHATWARFARE_API_KEY"):
         api_key = os.getenv("GRAYHATWARFARE_API_KEY")
     else:
-        print("An API key is required to use this script, please register to obtain one at https://grayhatwarfare.com/register")
+        print("An API key is required to use this script, please register to obtain one at https://grayhatwarfare.com/register. If you already have one, please set your API key using environment variables, e.g. export GRAYHATWARFARE_API_KEY=key")
         exit()
 
     # setup debug logging if requested
